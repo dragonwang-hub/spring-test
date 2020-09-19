@@ -18,9 +18,10 @@ public class TradeDto {
     @GeneratedValue
     private int id;
     private int amount;
+    // 尝试加入@Column(unique = true)
     private int rank;
 
-    @OneToOne(optional = false,mappedBy = "trade")
+    @OneToOne(optional = false, mappedBy = "trade", cascade = CascadeType.REMOVE)
     @JoinColumn(name = "rsEvent_id")
     private RsEventDto rsEvent;
 }

@@ -100,7 +100,6 @@ class RsServiceTest {
     }
 
     @Test
-        //PostMapping("/rs/buy/{id}")
     void shouldBuyRsEventSuccess() {
         // given
         Trade trade = Trade.builder()
@@ -128,7 +127,107 @@ class RsServiceTest {
                         .build();
         when(rsEventRepository.findById(anyInt())).thenReturn(Optional.of(rsEventDto));
         // when
-        rsService.buy(trade,10);
+        rsService.buy(trade, 10);
+        // then
+        verify(tradeRepository).save(TradeDto.builder()
+                .amount(trade.getAmount())
+                .rank(trade.getRank())
+                .rsEvent(rsEventDto)
+                .build());
+        verify(rsEventRepository).save(rsEventDto);
+    }
+
+    @Test
+    void shouldBuyRsEventFailWhenAmountLessThanRankIsBuyed() {
+        // given
+        Trade trade = Trade.builder()
+                .amount(100)
+                .rank(10)
+                .build();
+        UserDto userDto = UserDto.builder()
+                .voteNum(5)
+                .phone("18888888888")
+                .gender("female")
+                .email("a@b.com")
+                .age(19)
+                .userName("xiaoli")
+                .id(2)
+                .build();
+        RsEventDto rsEventDto = RsEventDto.builder()
+                .eventName("event name")
+                .id(1)
+                .keyword("keyword")
+                .voteNum(2)
+                .user(userDto)
+                .rsRank(10)
+                .build();
+        RsEventDto rsEventDtoFotTestBuy = RsEventDto.builder()
+                .eventName("new event name")
+                .id(2)
+                .keyword("keyword")
+                .voteNum(2)
+                .user(userDto)
+                .rsRank(100)
+                .build();
+        TradeDto tradeDto = TradeDto.builder()
+                .amount(100)
+                .rank(10)
+                .rsEvent(rsEventDto)
+                .build();
+
+        when(tradeRepository.findByRank(10)).thenReturn(tradeDto);
+        when(rsEventRepository.findById(anyInt())).thenReturn(Optional.of(rsEventDtoFotTestBuy));
+
+        // when&&then
+        assertThrows(
+                RuntimeException.class,
+                () -> {
+                    rsService.buy(trade, 10);
+                });
+    }
+
+    @Test
+    void shouldBuyRsEventSuccessWhenAmountMoreThanRankIsBuyed() {
+        // given
+        Trade trade = Trade.builder()
+                .amount(100)
+                .rank(10)
+                .build();
+        UserDto userDto = UserDto.builder()
+                .voteNum(5)
+                .phone("18888888888")
+                .gender("female")
+                .email("a@b.com")
+                .age(19)
+                .userName("xiaoli")
+                .id(2)
+                .build();
+        RsEventDto rsEventDto = RsEventDto.builder()
+                .eventName("event name")
+                .id(1)
+                .keyword("keyword")
+                .voteNum(2)
+                .user(userDto)
+                .rsRank(10)
+                .build();
+        RsEventDto rsEventDtoFotTestBuy = RsEventDto.builder()
+                .eventName("new event name")
+                .id(2)
+                .keyword("keyword")
+                .voteNum(2)
+                .user(userDto)
+                .rsRank(100)
+                .build();
+        TradeDto tradeDto = TradeDto.builder()
+                .amount(10)
+                .rank(10)
+                .rsEvent(rsEventDto)
+                .build();
+
+        when(tradeRepository.findByRank(10)).thenReturn(tradeDto);
+        when(rsEventRepository.findById(anyInt())).thenReturn(Optional.of(rsEventDtoFotTestBuy));
+        // when
+        rsService.buy(trade, 10);
         // then
         verify(tradeRepository).save(TradeDto.builder()
                 .amount(trade.getAmount())

@@ -59,6 +59,23 @@ public class RsService {
         if (!rsEventDto.isPresent()) {
             throw new RuntimeException();
         }
+        Optional<TradeDto> rankIsBuyed = Optional.ofNullable(tradeRepository.findByRank(trade.getRank()));
+
+        boolean IsSuccessOfBuyRank = false;
+        // 判断是否存在rank已被购买，并判断是否删除替换
+        if (!rankIsBuyed.isPresent()) {
+            IsSuccessOfBuyRank = true;
+        } else {
+            // 新购买的记录的Amount 大于 原处于rank记录
+            if (trade.getAmount() > rankIsBuyed.get().getAmount()) {
+                tradeRepository.delete(rankIsBuyed.get());
+                IsSuccessOfBuyRank = true;
+            }
+        }
+        if(!IsSuccessOfBuyRank){
+            throw new RuntimeException();
+        }
+
         TradeDto tradeDto = TradeDto.builder()
                 .amount(trade.getAmount())
                 .rank(trade.getRank())
