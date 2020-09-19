@@ -287,12 +287,14 @@ class RsControllerTest {
                 .amount(100)
                 .rank(10)
                 .build();
+        assertEquals(2,rsEventRepository.count());
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonTrade = objectMapper.writeValueAsString(trade);
         mockMvc.perform(post("/rs/buy/{id}", rsEventDtoFotTestBuy.getId())
                 .content(jsonTrade).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         RsEventDto rsEventRank10 = tradeRepository.findByRank(10).getRsEvent();
+        assertEquals(1,rsEventRepository.count());
         assertEquals("new event name",String.valueOf(rsEventRank10.getEventName()));
     }
 
@@ -327,19 +329,19 @@ class RsControllerTest {
                 .user(userDto_1)
                 .build();
         RsEventDto rsEventDto_2 = RsEventDto.builder()
-                .eventName("2.猪肉什么时候降价")
+                .eventName("2.2号事件")
                 .keyword("经济")
                 .user(userDto_1)
                 .voteNum(2)
                 .build();
         RsEventDto rsEventDto_3 = RsEventDto.builder()
-                .eventName("3.三号事件")
+                .eventName("3.3号事件")
                 .keyword("forTest")
                 .user(userDto_1)
                 .voteNum(3)
                 .build();
         RsEventDto rsEventDto_4 = RsEventDto.builder()
-                .eventName("4.四号事件")
+                .eventName("4.4号事件")
                 .keyword("forTest")
                 .user(userDto_2)
                 .voteNum(4)
@@ -375,5 +377,27 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[0].voteNum",is(6)))
                 .andExpect(jsonPath("$[5].eventName",is("1.猪肉又涨价了啊！")))
                 .andExpect(jsonPath("$[5].voteNum",is(1)));
+    }
+
+    // 2020年9月19日23:22:32 终止在此，需要进行存在氪金用户操作
+    @Test
+    public void shouldGetAllRsEventBySortWhenHaveBuyyedRsEvent() throws Exception {
+        setData();
+        TradeDto tradeDto = TradeDto.builder()
+                .amount(10)
+                .rank(1)
+                .rsEvent(rsEventDto_1)
+                .build();
+        tradeRepository.save(tradeDto);
+        rsEventDto_1.setRsRank(tradeDto.getRank());
+        rsEventDto_1.setTrade(tradeDto);
+        rsEventRepository.save(rsEventDto_1);
+        mockMvc.perform(get("/rs/sortedevents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(6)))
+                .andExpect(jsonPath("$[0].eventName",is("1.猪肉又涨价了啊！")))
+                .andExpect(jsonPath("$[0].voteNum",is(1)))
+                .andExpect(jsonPath("$[5].eventName",is("2.2号事件")))
+                .andExpect(jsonPath("$[5].voteNum",is(2)));
     }
 }

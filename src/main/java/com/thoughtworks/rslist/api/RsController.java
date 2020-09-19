@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -120,9 +117,21 @@ public class RsController {
                 .collect(Collectors.toList());
 
         List<RsEvent> rsEventNoBuyRank = rsEvents.stream().filter(rs -> rs.getRsRank() == 0).collect(Collectors.toList());
-        List<RsEvent> rsEventBuyRank = rsEvents.stream().filter(rs -> rs.getRsRank() != 0).collect(Collectors.toList());
         rsEventNoBuyRank.sort(new RsEventComparator());
 
+        List<RsEvent> rsEventBuyRank = rsEvents.stream().filter(rs -> rs.getRsRank() != 0).collect(Collectors.toList());
+        Map<Integer, RsEvent> rsEventBuyRankMap = new TreeMap<>();
+        rsEventBuyRank.forEach(rs -> {
+            rsEventBuyRankMap.put(rs.getRsRank(), rs);
+        });
+        rsEventBuyRankMap.forEach((k, v) -> {//sortAllTopics.add(k, v));
+            k = k - 1;
+            if (k >= rsEventNoBuyRank.size()) { // 若某个位置热搜覆盖了最后一位的热搜，其位置会因为覆盖向前移动一位。
+                rsEventNoBuyRank.add(rsEventNoBuyRank.size(), v);
+            } else {
+                rsEventNoBuyRank.add(k, v);
+            }
+        });
         return ResponseEntity.ok(rsEventNoBuyRank);
     }
 
