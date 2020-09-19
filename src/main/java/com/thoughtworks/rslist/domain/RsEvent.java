@@ -1,9 +1,6 @@
 package com.thoughtworks.rslist.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -11,7 +8,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class RsEvent implements Serializable {
   @NotNull private String eventName;
   @NotNull private String keyword;

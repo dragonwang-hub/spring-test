@@ -100,7 +100,7 @@ class RsServiceTest {
     }
 
     @Test
-    void shouldBuyRsEventSuccess() {
+    void shouldBuyRankSuccessWhenTheRankHaveNotBuy() {
         // given
         Trade trade = Trade.builder()
                 .amount(100)

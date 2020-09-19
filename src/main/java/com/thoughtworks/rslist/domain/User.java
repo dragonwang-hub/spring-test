@@ -2,7 +2,9 @@ package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
@@ -11,7 +13,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class User {
     @NotNull

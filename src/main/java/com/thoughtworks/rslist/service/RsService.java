@@ -84,6 +84,7 @@ public class RsService {
         tradeRepository.save(tradeDto);
         RsEventDto rsEvent = rsEventDto.get();
         rsEvent.setRsRank(tradeDto.getRank());
+        rsEvent.setTrade(tradeDto);
         rsEventRepository.save(rsEvent);
     }
 }
