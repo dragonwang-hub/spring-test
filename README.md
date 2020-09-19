@@ -26,3 +26,10 @@
   
     2020年9月19日13:20:10
 目前已完成热搜购买覆盖等测试，需要到RsController里的buy方法写测试进行测试相同功能
+
+2020年9月19日16:00:36
+已完成RsController里的buy方法写测试、
+
+完成这一步时，出现问题：原测试的get出现could not execute statement; SQL [n/a];  ========sql错误
+
+现在要求获得所有热搜排名

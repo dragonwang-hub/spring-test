@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasKey;
@@ -62,7 +63,9 @@ class RsControllerTest {
                         .age(19)
                         .userName("idolice")
                         .build();
+
     }
+
 
     @Test
     public void shouldGetRsEventList() throws Exception {
@@ -279,7 +282,7 @@ class RsControllerTest {
                 .user(save)
                 .rsRank(100)
                 .build();
-        rsEventDto = rsEventRepository.save(rsEventDtoFotTestBuy);
+        rsEventRepository.save(rsEventDtoFotTestBuy);
         Trade trade = Trade.builder()
                 .amount(100)
                 .rank(10)
@@ -291,5 +294,86 @@ class RsControllerTest {
                 .andExpect(status().isOk());
         RsEventDto rsEventRank10 = tradeRepository.findByRank(10).getRsEvent();
         assertEquals("new event name",String.valueOf(rsEventRank10.getEventName()));
+    }
+
+
+    // 数据初始化，为了不影响其他已存在测试，在此测试中，单独调用。
+    UserDto userDto_1;
+    RsEventDto rsEventDto_1;
+    private void setData() {
+        userDto_1 = UserDto.builder()
+                .userName("hello")
+                .age(19)
+                .gender("male")
+                .email("1@2.3")
+                .phone("10123456789")
+                .build();
+        UserDto userDto_2 = UserDto.builder()
+                .userName("kitty")
+                .age(19)
+                .gender("female")
+                .email("1@2.3")
+                .phone("10123456789")
+                .build();
+        List<UserDto> userDtoList = new ArrayList<>();
+        userDtoList.add(userDto_1);
+        userDtoList.add(userDto_2);
+        userRepository.saveAll(userDtoList);
+
+        rsEventDto_1 = RsEventDto.builder()
+                .eventName("1.猪肉又涨价了啊！")
+                .keyword("经济")
+                .voteNum(1)
+                .user(userDto_1)
+                .build();
+        RsEventDto rsEventDto_2 = RsEventDto.builder()
+                .eventName("2.猪肉什么时候降价")
+                .keyword("经济")
+                .user(userDto_1)
+                .voteNum(2)
+                .build();
+        RsEventDto rsEventDto_3 = RsEventDto.builder()
+                .eventName("3.三号事件")
+                .keyword("forTest")
+                .user(userDto_1)
+                .voteNum(3)
+                .build();
+        RsEventDto rsEventDto_4 = RsEventDto.builder()
+                .eventName("4.四号事件")
+                .keyword("forTest")
+                .user(userDto_2)
+                .voteNum(4)
+                .build();
+        RsEventDto rsEventDto_5 = RsEventDto.builder()
+                .eventName("5.5号事件")
+                .keyword("forTest")
+                .user(userDto_2)
+                .voteNum(5)
+                .build();
+        RsEventDto rsEventDto_6 = RsEventDto.builder()
+                .eventName("6.6号事件")
+                .keyword("forTest")
+                .user(userDto_2)
+                .voteNum(6)
+                .build();
+        List<RsEventDto> rsEventDtoList = new ArrayList<>();
+        rsEventDtoList.add(rsEventDto_1);
+        rsEventDtoList.add(rsEventDto_2);
+        rsEventDtoList.add(rsEventDto_3);
+        rsEventDtoList.add(rsEventDto_4);
+        rsEventDtoList.add(rsEventDto_5);
+        rsEventDtoList.add(rsEventDto_6);
+        rsEventRepository.saveAll(rsEventDtoList);
+    }
+    @Test
+    public void shouldGetAllRsEventBySortWhenNoHaveBuyyedRsEvent() throws Exception {
+        setData();
+        mockMvc.perform(get("/rs/sortedevents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(6)))
+                .andExpect(jsonPath("$[0].eventName",is("6.6号事件")))
+                .andExpect(jsonPath("$[0].voteNum",is(6)))
+                .andExpect(jsonPath("$[5].eventName",is("1.猪肉又涨价了啊！")))
+                .andExpect(jsonPath("$[5].voteNum",is(1)));
     }
 }

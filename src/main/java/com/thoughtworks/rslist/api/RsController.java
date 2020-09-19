@@ -10,6 +10,7 @@ import com.thoughtworks.rslist.exception.RequestNotValidException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.RsService;
+import org.hibernate.mapping.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -104,6 +107,25 @@ public class RsController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/rs/sortedevents")
+    public ResponseEntity<List<RsEvent>> getAllRsEventByOrderDesc() {
+        List<RsEvent> rsEvents = rsEventRepository.findAll().stream()
+                .map(item -> RsEvent.builder()
+                        .eventName(item.getEventName())
+                        .keyword(item.getKeyword())
+                        .userId(item.getId())
+                        .voteNum(item.getVoteNum())
+                        .rsRank(item.getRsRank())
+                        .build())
+                .collect(Collectors.toList());
+
+        List<RsEvent> rsEventNoBuyRank = rsEvents.stream().filter(rs -> rs.getRsRank() == 0).collect(Collectors.toList());
+        List<RsEvent> rsEventBuyRank = rsEvents.stream().filter(rs -> rs.getRsRank() != 0).collect(Collectors.toList());
+        rsEventNoBuyRank.sort(new RsEventComparator());
+
+        return ResponseEntity.ok(rsEventNoBuyRank);
+    }
+
 
     @ExceptionHandler({RequestNotValidException.class, RuntimeException.class})
     public ResponseEntity<Error> handleRequestErrorHandler(Exception e) {
@@ -111,4 +133,20 @@ public class RsController {
         error.setError(e.getMessage());
         return ResponseEntity.badRequest().body(error);
     }
+}
+
+// 比较器
+class RsEventComparator implements Comparator<RsEvent> {
+    @Override
+    public int compare(RsEvent rsEvent1, RsEvent rsEvent2) {
+        int result = 0;
+        // 比较用来排序的两个参数。根据第一个参数小于、等于或大于第二个参数分别返回负整数、零或正整数。
+        // 总票数排序,升序
+        int voteCountSeq = rsEvent1.getVoteNum() - rsEvent2.getVoteNum();
+        if (voteCountSeq != 0) {
+            result = (voteCountSeq < 0) ? 1 : -1;
+        }
+        return result;
+    }
+
 }

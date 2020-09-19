@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "rsEvent")
 public class RsEventDto {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String eventName;
     private String keyword;
@@ -21,10 +21,9 @@ public class RsEventDto {
     @JoinColumn(name = "user_id")
     private UserDto user;
 
-    @OneToOne(cascade = CascadeType.ALL,mappedBy = "rsEvent")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "rsEvent")
     @JoinColumn(name = "trade_id")
     private TradeDto trade;
 
-    @Column(unique = true)
     private int rsRank;
 }

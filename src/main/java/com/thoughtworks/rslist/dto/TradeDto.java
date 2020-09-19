@@ -15,7 +15,7 @@ public class TradeDto {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     private int amount;
-    // 尝试加入@Column(unique = true)
+
     private int rank;
 
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)

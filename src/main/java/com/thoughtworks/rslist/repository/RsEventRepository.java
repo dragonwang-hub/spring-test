@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface RsEventRepository extends CrudRepository<RsEventDto, Integer> {
   List<RsEventDto> findAll();
-
   @Transactional
   void deleteAllByUserId(int userId);
 }
