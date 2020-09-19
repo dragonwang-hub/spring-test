@@ -132,6 +132,9 @@ public class RsController {
                 rsEventNoBuyRank.add(k, v);
             }
         });
+        for (int i = 0; i < rsEventNoBuyRank.size(); i++) {
+            rsEventNoBuyRank.get(i).setRsRank(i+1);
+        }
         return ResponseEntity.ok(rsEventNoBuyRank);
     }
 

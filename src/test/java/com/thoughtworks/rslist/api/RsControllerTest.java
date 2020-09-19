@@ -375,11 +375,12 @@ class RsControllerTest {
                 .andExpect(jsonPath("$",hasSize(6)))
                 .andExpect(jsonPath("$[0].eventName",is("6.6号事件")))
                 .andExpect(jsonPath("$[0].voteNum",is(6)))
+                .andExpect(jsonPath("$[0].rsRank",is(1)))
                 .andExpect(jsonPath("$[5].eventName",is("1.猪肉又涨价了啊！")))
-                .andExpect(jsonPath("$[5].voteNum",is(1)));
+                .andExpect(jsonPath("$[5].voteNum",is(1)))
+                .andExpect(jsonPath("$[5].rsRank",is(6)));        ;
     }
 
-    // 2020年9月19日23:22:32 终止在此，需要进行存在氪金用户操作
     @Test
     public void shouldGetAllRsEventBySortWhenHaveBuyyedRsEvent() throws Exception {
         setData();
@@ -397,7 +398,9 @@ class RsControllerTest {
                 .andExpect(jsonPath("$",hasSize(6)))
                 .andExpect(jsonPath("$[0].eventName",is("1.猪肉又涨价了啊！")))
                 .andExpect(jsonPath("$[0].voteNum",is(1)))
+                .andExpect(jsonPath("$[0].rsRank",is(1)))
                 .andExpect(jsonPath("$[5].eventName",is("2.2号事件")))
-                .andExpect(jsonPath("$[5].voteNum",is(2)));
+                .andExpect(jsonPath("$[5].voteNum",is(2)))
+                .andExpect(jsonPath("$[5].rsRank",is(6)));
     }
 }
