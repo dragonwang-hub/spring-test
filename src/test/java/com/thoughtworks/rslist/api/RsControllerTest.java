@@ -112,7 +112,6 @@ class RsControllerTest {
 
         RsEventDto rsEventDto =
                 RsEventDto.builder().keyword("无分类").eventName("第一条事件").user(save).build();
-
         rsEventRepository.save(rsEventDto);
         rsEventDto = RsEventDto.builder().keyword("无分类").eventName("第二条事件").user(save).build();
         rsEventRepository.save(rsEventDto);
@@ -244,7 +243,7 @@ class RsControllerTest {
                 .user(save)
                 .rsRank(100)
                 .build();
-
+        rsEventDto = rsEventRepository.save(rsEventDtoFotTestBuy);
         Trade trade = Trade.builder()
                 .amount(100)
                 .rank(10)
@@ -256,5 +255,41 @@ class RsControllerTest {
                 .andExpect(status().isBadRequest());
         RsEventDto rsEventRank10 = tradeRepository.findByRank(10).getRsEvent();
         assertEquals("event name",String.valueOf(rsEventRank10.getEventName()));
+    }
+
+    @Test
+    public void shouldBuyRsEventFailWhenAmountMoreThanRankIsBuyed() throws Exception {
+        UserDto save = userRepository.save(userDto);
+        RsEventDto rsEventDto = RsEventDto.builder()
+                .eventName("event name")
+                .keyword("keyword")
+                .user(save)
+                .rsRank(10)
+                .build();
+        rsEventDto = rsEventRepository.save(rsEventDto);
+        TradeDto tradeDto = TradeDto.builder()
+                .amount(10)
+                .rank(10)
+                .rsEvent(rsEventDto)
+                .build();
+        tradeRepository.save(tradeDto);
+        RsEventDto rsEventDtoFotTestBuy = RsEventDto.builder()
+                .eventName("new event name")
+                .keyword("keyword")
+                .user(save)
+                .rsRank(100)
+                .build();
+        rsEventDto = rsEventRepository.save(rsEventDtoFotTestBuy);
+        Trade trade = Trade.builder()
+                .amount(100)
+                .rank(10)
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonTrade = objectMapper.writeValueAsString(trade);
+        mockMvc.perform(post("/rs/buy/{id}", rsEventDtoFotTestBuy.getId())
+                .content(jsonTrade).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        RsEventDto rsEventRank10 = tradeRepository.findByRank(10).getRsEvent();
+        assertEquals("new event name",String.valueOf(rsEventRank10.getEventName()));
     }
 }
