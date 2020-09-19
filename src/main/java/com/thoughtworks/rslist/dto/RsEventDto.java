@@ -5,11 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Builder
@@ -18,9 +14,19 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Table(name = "rsEvent")
 public class RsEventDto {
-  @Id @GeneratedValue private int id;
-  private String eventName;
-  private String keyword;
-  private int voteNum;
-  @ManyToOne private UserDto user;
+    @Id
+    @GeneratedValue
+    private int id;
+    private String eventName;
+    private String keyword;
+    private int voteNum;
+    @ManyToOne
+    private UserDto user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "trade_id")
+    private TradeDto trade;
+
+    @Column(unique = true)
+    private int rsRank;
 }
