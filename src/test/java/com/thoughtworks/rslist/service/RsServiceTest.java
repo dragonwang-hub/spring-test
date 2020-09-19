@@ -232,8 +232,8 @@ class RsServiceTest {
         verify(tradeRepository).save(TradeDto.builder()
                 .amount(trade.getAmount())
                 .rank(trade.getRank())
-                .rsEvent(rsEventDto)
+                .rsEvent(rsEventDtoFotTestBuy)
                 .build());
-        verify(rsEventRepository).save(rsEventDto);
+        verify(rsEventRepository).save(rsEventDtoFotTestBuy);
     }
 }
