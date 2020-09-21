@@ -261,7 +261,7 @@ class RsControllerTest {
     }
 
     @Test
-    public void shouldBuyRsEventFailWhenAmountMoreThanRankIsBuyed() throws Exception {
+    public void shouldBuyRsEventSuccessWhenAmountMoreThanRankIsBuyed() throws Exception {
         UserDto save = userRepository.save(userDto);
         RsEventDto rsEventDto = RsEventDto.builder()
                 .eventName("event name")

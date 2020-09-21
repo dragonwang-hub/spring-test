@@ -10,7 +10,6 @@ import com.thoughtworks.rslist.exception.RequestNotValidException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.RsService;
-import org.hibernate.mapping.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,7 +74,7 @@ public class RsController {
     }
 
     @PostMapping("/rs/event")
-    public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
+    public ResponseEntity addRsEvent(@RequestBody RsEvent rsEvent) {
         Optional<UserDto> userDto = userRepository.findById(rsEvent.getUserId());
         if (!userDto.isPresent()) {
             return ResponseEntity.badRequest().build();
